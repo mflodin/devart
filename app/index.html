@@ -24,17 +24,18 @@
     </head>
     <body>
 
-        <div class="container">
+        <!-- <div class="container"> -->
             <div class="header">
                 <h3 class="text-muted">devart side of the moon</h3>
-                <audio id='audio' src="sounds/brain-damage.mp3" controls class="right"></audio>
+                <audio id='audio' autoplay></audio>
             </div>
+        <!-- </div> -->
+        <canvas id="mainCanvas"></canvas>
+
+        <div id="attribution">
+            <div id="soundAttribution"></div>
+            <a href="http://soundcloud.com"><img src="images/soundcloud-logo.png"></a>
         </div>
-        <canvas id="mainCanvas" width="800px" height="400px"></canvas>
-        <canvas id="spectrumCanvas" width="1000px" height="400px"></canvas>
-        <canvas id="lightCanvas" width="800px" height="400px"></canvas>
-
-
         <!-- build:js({app,.tmp}) scripts/main.js -->
         <script data-main="scripts/main" src="bower_components/requirejs/require.js"></script>
         <!-- endbuild -->
