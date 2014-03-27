@@ -39,6 +39,8 @@ define([
         var lightPosition = 0.45;
         var mainTriangle;
         var innerTriangleGradient;
+        var sqrt3 = Math.sqrt(3);
+        var sqrt3reciprocal = 1/ sqrt3;
 
 
         function connectAudio() {
@@ -109,19 +111,20 @@ define([
             innerTriangleGradient = mainContext.createLinearGradient(innerTriangle.a.x, innerTriangle.a.y, midPointFarSide.x, midPointFarSide.y);
             // innerTriangleGradient = mainContext.createLinearGradient(innerTriangle.a.x, innerTriangle.a.y, (innerTriangle.b.x - innerTriangle.c.x) * 0.5 + innerTriangle.a.x,  innerTriangle.a.y);
             innerTriangleGradient.addColorStop(0, 'rgba(255,255,255,' + spectrumData.intensity + ')');
-            innerTriangleGradient.addColorStop(0.5 + spectrumData.intensity * 0.5, 'rgba(255,255,255,0)');
+            innerTriangleGradient.addColorStop(0.5 + 0.5 * spectrumData.intensity, 'rgba(255,255,255,0)');
             mainContext.fillStyle = innerTriangleGradient;//'rgba(255,255,255,1)';
             mainContext.shadowColor = '#fff';
             mainContext.shadowBlur = 40;
             mainContext.shadowOffsetX = 0;
             mainContext.shadowOffsetY = 0;
             mainContext.beginPath();
-            mainContext.moveTo(innerTriangle.a.x, innerTriangle.a.y);
+
+            mainContext.moveTo(innerTriangle.a.x + lineWidth * sqrt3reciprocal, innerTriangle.a.y - lineWidth * sqrt3reciprocal);
+            mainContext.lineTo(innerTriangle.a.x, innerTriangle.a.y + lineWidth * sqrt3reciprocal);
             mainContext.lineTo(innerTriangle.b.x, innerTriangle.b.y);
             mainContext.lineTo(innerTriangle.c.x, innerTriangle.c.y);
             mainContext.closePath();
             mainContext.fill();
-
             mainContext.restore();
         }
 
@@ -134,7 +137,6 @@ define([
 
         function getInnerTriangle(outerTriangle, spread) {
             var a = getPointOnLine(outerTriangle.a, outerTriangle.c, lightPosition);
-            a.x -= lineWidth * 0.5;
             var b = getPointOnLine(outerTriangle.a, outerTriangle.b, 0.5 + spread * 0.5);
             var c = getPointOnLine(outerTriangle.b, outerTriangle.a, 0.5 + spread * 0.5);
 
@@ -172,7 +174,7 @@ define([
         }
         
         function drawLight(spectrumData) {
-            lightContext.clearRect(0,lightCanvas.height * 0.25,lightCanvas.width, lightCanvas.height * 0.75);
+            lightContext.globalCompositeOperation = 'copy';
             if(!spectrumData) {
                 return;
             }
@@ -261,7 +263,7 @@ define([
         }
 
         var horizontalShear = 0.576689; // 1 + e + pi?
-        var verticalShear = 1/3;
+        var verticalShear = 0.25;
         function drawComposite(spectrumData) {
             mainContext.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
 
@@ -274,7 +276,7 @@ define([
             mainContext.save();
             mainContext.translate(mainCanvas.width/2, 0);
             mainContext.transform(1, verticalShear, horizontalShear, 1, 0, 0);
-            mainContext.translate(-lineWidth * horizontalShear - 2, lineWidth); // ok to be higher
+            mainContext.translate(-lineWidth * horizontalShear - 2, lineWidth * 2); // ok to be higher
 
             mainContext.drawImage(spectrumCanvas, -2,0);
             mainContext.restore();
@@ -311,7 +313,7 @@ define([
         }
 
         connectAudio();
-        drawComposite({intensity: 0.25, bins: []});
+        // drawComposite({intensity: 0.5, bins: []});
         renderFrame();
         // debugDraw();
     });
