@@ -14,7 +14,7 @@ define([
                 window.msRequestAnimationFrame ||
                 function(callback) {
                     window.setTimeout(callback, 1000 / 60);
-            };
+                };
         })();
 
         console.log('App started');
@@ -34,7 +34,6 @@ define([
         var lightCanvas = document.createElement('canvas');
         var lightContext = lightCanvas.getContext('2d');
         var spectrumImageData = spectrumContext.getImageData(0, 0, spectrumCanvas.width, spectrumCanvas.height);
-        var lightImageData = lightContext.getImageData(0, 0, lightCanvas.width, lightCanvas.height);
         var lineWidth = 10;
         var lightPosition = 0.45;
         var mainTriangle;
@@ -45,17 +44,16 @@ define([
 
         function connectAudio() {
             var audio = document.getElementById('audio');
-            var attributionLink = document.getElementById('attribution');
-            var client_id = "d6fde5b15e7dd0e9006ce8d25efb5bec";
+            var clientId = 'd6fde5b15e7dd0e9006ce8d25efb5bec';
 
             SC.initialize({
-              client_id: client_id
+              client_id: clientId
             });
 
 
-            // SC.get("/tracks/141233519", {}, function(sound) { // testtrack - more power from start
-            SC.get("/tracks/17611741", {}, function(sound) { // darkside
-                audio.src = sound.stream_url + '?client_id=' + client_id;
+            // SC.get('/tracks/141233519', {}, function(sound) { // testtrack - more power from start
+            SC.get('/tracks/17611741', {}, function(sound) { // darkside
+                audio.src = sound.stream_url + '?client_id=' + clientId;
                 createAttribution(sound);
             });
 
@@ -96,7 +94,7 @@ define([
             mainTriangle = getMainTriangle({x: mainCanvas.width * 0.5, y: 0}, spectrumCanvas.height);
 
 
-        };
+        }
         onResize();
         window.onresize = onResize;
         
@@ -132,7 +130,7 @@ define([
             return {
                 x: (endPoint.x - startPoint.x) * fraction + startPoint.x,
                 y: (endPoint.y - startPoint.y) * fraction + startPoint.y
-            }
+            };
         }
 
         function getInnerTriangle(outerTriangle, spread) {
@@ -156,9 +154,8 @@ define([
             var opacity = spectrumData.intensity;
 
             mainContext.save();
-            mainContext.globalCompositeOperation = 'copy';
-            mainContext.strokeStyle = 'rgba(255,255,255,'+ opacity + ')';
-            mainContext.shadowColor = '#fff';
+            mainContext.strokeStyle =
+            mainContext.shadowColor = 'hsl(0,0%,' + (20 + 80 * opacity) + '%)';
             mainContext.shadowBlur = 40;
             mainContext.shadowOffsetX = 0;
             mainContext.shadowOffsetY = 0;
@@ -170,6 +167,7 @@ define([
             // mainContext.lineJoin = 'round';
             mainContext.closePath();
             mainContext.stroke();
+
             mainContext.restore();
         }
         
@@ -179,8 +177,9 @@ define([
                 return;
             }
             var opacity = spectrumData.intensity;
-            lightContext.fillStyle = 'rgba(255,255,255,'+ opacity + ')';
-            lightContext.shadowColor = '#fff';
+            lightContext.fillStyle =
+            lightContext.shadowColor = 'hsl(0,0%,'+ 100 * opacity + '%)';
+            lightContext.shadowColor = lightContext.fillStyle;
             lightContext.shadowBlur = 40;
             lightContext.shadowOffsetX = 0;
             lightContext.shadowOffsetY = 0;
@@ -253,7 +252,7 @@ define([
                 spectrumContext.shadowColor = spectrumContext.fillStyle;
                 spectrumContext.fillRect(0, 0 - spectrumData.totalMagnitude / (2 * scalingFactor) + y, xStepWidth,  scaledMagnitude);
                 y += scaledMagnitude;
-            };
+            }
 
 
             spectrumContext.restore();
