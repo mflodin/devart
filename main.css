@@ -29,8 +29,9 @@ a:active {
   color: #fff;
 }
 
-#mainCanvas {
-  margin-top: 10%;
+#timelineCanvas {
+  transform: scaleX(-1);
+  margin-right: -1px;
 }
 
 #playButton {
