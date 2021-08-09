@@ -1,9 +1,11 @@
 /* Space out content a bit */
 body {
-  padding-top: 20px;
-  padding-bottom: 20px;
+  height: 100vh;
   background-color: #000;
   font-family: Helvetica, Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
