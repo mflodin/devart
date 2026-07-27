@@ -26,7 +26,7 @@
       0,
       0,
       timelineCanvas.width,
-      timelineCanvas.height
+      timelineCanvas.height,
     );
 
     var instantCanvas = document.getElementById("instantCanvas");
@@ -37,7 +37,7 @@
     function connectAudio() {
       var audio = document.getElementById("audio");
 
-      audio.src = "sound.mp3";
+      audio.src = "audio/lounge.mp3";
       audio.play();
 
       var source = audioContext.createMediaElementSource(audio);
@@ -92,7 +92,7 @@
         0,
         0,
         timelineCanvas.width,
-        timelineCanvas.height
+        timelineCanvas.height,
       );
     }
 
