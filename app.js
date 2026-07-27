@@ -35,7 +35,7 @@
     function connectAudio() {
       var audio = document.getElementById("audio");
 
-      audio.src = "sound.mp3";
+      audio.src = "audio/sirius.mp3";
       audio.play();
 
       var source = audioContext.createMediaElementSource(audio); // creates a sound source
