@@ -1,0 +1,48 @@
+/* Space out content a bit */
+body {
+  height: 100vh;
+  background-color: #000;
+  font-family: Helvetica, Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+header {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+header h3 {
+  color: #eee;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 40px;
+  padding-bottom: 19px;
+}
+
+a,
+a:hover,
+a:visited,
+a:active {
+  color: #fff;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#timelineCanvas {
+  transform: scaleX(-1);
+  margin-right: -1px;
+}
+
+#playButton {
+  background-color: transparent;
+  color: #eee;
+  margin: auto;
+  border: 1px #222 solid;
+}

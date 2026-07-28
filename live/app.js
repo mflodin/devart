@@ -1,17 +1,13 @@
 "use strict";
 (function () {
-  var playButton = document.getElementById("playButton");
-  playButton.addEventListener("click", function () {
-    playButton.parentElement.removeChild(playButton);
-    console.log("App started");
-
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  var recordButton = document.getElementById("recordButton");
+  recordButton.addEventListener("click", function () {
+    recordButton.remove();
     var audioContext = new window.AudioContext();
     var scalingFactor = 12;
 
     var analyser = audioContext.createAnalyser();
     analyser.fftSize = 64;
-    // analyser.smoothingTimeConstant = 0.95;
     var frequencyData = new Uint8Array(analyser.frequencyBinCount);
     var mainCanvas = document.getElementById("mainCanvas");
     var mainContext = mainCanvas.getContext("2d");
@@ -33,26 +29,20 @@
     var sqrt3reciprocal = 1 / sqrt3;
 
     function connectAudio() {
-      var audio = document.getElementById("audio");
-
-      audio.play();
-
-      var source = audioContext.createMediaElementSource(audio); // creates a sound source
-      source.connect(analyser);
-      analyser.connect(audioContext.destination); // connect the source to the audioContext's destination (the speakers)
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then(function (stream) {
+          var source = audioContext.createMediaStreamSource(stream); // creates a sound source from the microphone
+          source.connect(analyser);
+        })
+        .catch(function onError() {
+          console.log("could not connect live audio");
+        });
     }
 
-    var log;
-    window.addEventListener("click", function () {
-      log = true;
-    });
     function renderFrame() {
       window.requestAnimationFrame(renderFrame);
       analyser.getByteFrequencyData(frequencyData);
-      if (log) {
-        console.log(frequencyData);
-        log = false;
-      }
       var spectrumData = getSpectrumData(frequencyData);
       drawComposite(spectrumData);
     }
@@ -79,20 +69,17 @@
       );
 
       mainContext.save();
-      // mainContext.globalCompositeOperation = 'copy';
       var midPointFarSide = getPointOnLine(
         innerTriangle.c,
         innerTriangle.b,
         0.25,
       );
-      // mainContext.strokeStyle = 'rgba(255,255,255,'+ spectrumData.intensity + ')';
       innerTriangleGradient = mainContext.createLinearGradient(
         innerTriangle.a.x,
         innerTriangle.a.y,
         midPointFarSide.x,
         midPointFarSide.y,
       );
-      // innerTriangleGradient = mainContext.createLinearGradient(innerTriangle.a.x, innerTriangle.a.y, (innerTriangle.b.x - innerTriangle.c.x) * 0.5 + innerTriangle.a.x,  innerTriangle.a.y);
       innerTriangleGradient.addColorStop(
         0,
         "rgba(255,255,255," + spectrumData.intensity + ")",
@@ -101,7 +88,7 @@
         0.5 + 0.5 * spectrumData.intensity,
         "rgba(255,255,255,0)",
       );
-      mainContext.fillStyle = innerTriangleGradient; //'rgba(255,255,255,1)';
+      mainContext.fillStyle = innerTriangleGradient;
       mainContext.shadowColor = "#fff";
       mainContext.shadowBlur = 40;
       mainContext.shadowOffsetX = 0;
@@ -169,7 +156,6 @@
       mainContext.moveTo(mainTriangle.a.x, mainTriangle.a.y);
       mainContext.lineTo(mainTriangle.b.x, mainTriangle.b.y);
       mainContext.lineTo(mainTriangle.c.x, mainTriangle.c.y);
-      // mainContext.lineJoin = 'round';
       mainContext.closePath();
       mainContext.stroke();
 
@@ -198,7 +184,6 @@
 
     var maxMagnitude = spectrumCanvas.height * scalingFactor;
     function getSpectrumData(frequencyData) {
-      // body...
       var colors = ["red", "orange", "yellow", "green", "blue", "indigo"];
 
       var totalMagnitude = 0;
@@ -251,7 +236,6 @@
 
       for (var i = 0; i < spectrumData.bins.length; i++) {
         // multiply spectrum by a zoom value
-        // var scaledMagnitude = scalingFactor;
         var scaledMagnitude = spectrumData.bins[i] / scalingFactor;
         // Draw rectangle bars for each frequency bin
         spectrumContext.fillStyle = spectrumData.colors[Math.floor(i)];
@@ -259,7 +243,6 @@
         spectrumContext.fillRect(
           0,
           y - spectrumData.totalMagnitude / (2 * scalingFactor),
-          //   y / (2 * scalingFactor),
           xStepWidth,
           scaledMagnitude,
         );
@@ -283,7 +266,6 @@
       drawLight(spectrumData);
       mainContext.save();
 
-      // debugDraw();
       drawSpectrum(spectrumData);
 
       mainContext.save();
@@ -307,37 +289,11 @@
       mainContext.restore();
     }
 
-    function debugDraw() {
-      mainContext.save();
-      mainContext.translate(0, lineWidth * 2);
-      drawLight({ intensity: 0.5 });
-      drawTriangle({ intensity: 0.5 });
-      drawInnerTriangle(mainTriangle, { intensity: 0.5 });
-      mainContext.restore();
-      spectrumContext.clearRect(
-        0,
-        0,
-        spectrumCanvas.width,
-        spectrumCanvas.height,
-      );
-      spectrumContext.fillStyle = "rgba(255,0,0,0.5)";
-      spectrumContext.fillRect(
-        0,
-        0,
-        spectrumCanvas.width,
-        spectrumCanvas.height,
-      );
-      lightContext.fillStyle = "rgba(0,255,0,0.5)";
-
-      lightContext.fillRect(0, 0, lightCanvas.width, lightCanvas.height);
-      mainContext.fillStyle = "rgba(0,0,255,0.5)";
-      // mainContext.fillStyle = innerTriangleGradient;
-      mainContext.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
-    }
+    mainCanvas.addEventListener("click", () => {
+      mainCanvas.requestFullscreen();
+    });
 
     connectAudio();
-    // drawComposite({intensity: 0.5, bins: []});
     renderFrame();
-    // debugDraw();
   });
 })();
